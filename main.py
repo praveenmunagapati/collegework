@@ -1,26 +1,24 @@
 import csv
 
-filename = 'E1--BHARAT-INST--OF-ENGG--AND-TECH-218043_Attendance Status report - Hierarchy Format_20241004154258_20241004154448.csv'
+filename = 'E1--BHARAT-INST--OF-ENGG--AND-TECH-218043_Attendance Status report - Hierarchy Format_20241025154231_20241025154458.csv'
 attendance_by_year = {}
 with open(filename, 'r', encoding='utf-8-sig') as csvfile:
     reader = csv.DictReader(csvfile)
 
     # Skip the initial report details rows
-    # for _ in range(1):
-    #     for row in reader:
-    #         print(row)
-    #     next(reader)
-
-
     for row in reader:
         year = row['Designation']
+        keys = row.keys()
+        # print(type(keys))
+        # print(type(list(keys)[16]))
+
         attendee_data = {
             'Attendee ID': row['Attendee ID'],
             'Attendee Code': row['Attendee Code'],
             'Attendee Name': row['Attendee Name'],
             'Mobile No': row['Mobile No'],
             'Designation': row['Designation'],
-            '2024-October-04': row['2024-October-04'],
+            '2024-October-04': row[list(keys)[16]],#compute date format after the csv read
             'Total Days': row['Total Days'],
             'TotalHolidays': row['TotalHolidays'],
             'WorkingDays': row['WorkingDays'],
