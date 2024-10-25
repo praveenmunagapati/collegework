@@ -1,20 +1,59 @@
-import pandas as pd
-from datetime import datetime
+import csv
 
-# File paths
-csv_file_path = "E1--BHARAT-INST--OF-ENGG--AND-TECH-218043_Attendance Status report - Hierarchy Format_20241004154258_20241004154448.csv"
-output_excel_path = "III_YR_Biometric_Attendance_{date}.xlsx".format(date=datetime.today().strftime('%d-%m-%Y'))
+filename = 'E1--BHARAT-INST--OF-ENGG--AND-TECH-218043_Attendance Status report - Hierarchy Format_20241004154258_20241004154448.csv'
+attendance_by_year = {}
+with open(filename, 'r', encoding='utf-8-sig') as csvfile:
+    reader = csv.DictReader(csvfile)
 
-print(f"Reading CSV file: {csv_file_path}")
+    # Skip the initial report details rows
+    # for _ in range(1):
+    #     for row in reader:
+    #         print(row)
+    #     next(reader)
 
-# Step 1: Read the CSV file (skiprows=4 was included based on assumption)
-attendance_df = pd.read_csv(csv_file_path, skiprows=4)
 
-# Step 2: Display the first few rows to verify the data
-print("\nInitial data from the CSV file:")
-print(attendance_df.head())
+    for row in reader:
+        year = row['Designation']
+        attendee_data = {
+            'Attendee ID': row['Attendee ID'],
+            'Attendee Code': row['Attendee Code'],
+            'Attendee Name': row['Attendee Name'],
+            'Mobile No': row['Mobile No'],
+            'Designation': row['Designation'],
+            '2024-October-04': row['2024-October-04'],
+            'Total Days': row['Total Days'],
+            'TotalHolidays': row['TotalHolidays'],
+            'WorkingDays': row['WorkingDays'],
+            'Fullday Present': row['Fullday Present'],
+            'HalfDay Present': row['HalfDay Present'],
+            'Errors': row['Errors'],
+            'Total Absents': row['Total Absents'],
+            'Total Leaves': row['Total Leaves'],
+            'Week Offs': row['Week Offs'],
+            'On Duty': row['On Duty'],
+            'Eligible Days': row['Eligible Days'],
+            'Attendance%': row['Attendance%'],
+        }
 
-# Step 3: Display column names to understand the structure
-print("\nColumns in the CSV file:")
-for i in range(len(attendance_df.columns)):
-    print(i,attendance_df.columns[i])
+        if year in attendance_by_year:
+            attendance_by_year[year].append(attendee_data)
+        else:
+            attendance_by_year[year] = [attendee_data]
+
+    attendance_by_year
+# Print the attendance data for each year
+# for year, attendees in attendance_by_year.items():
+#     print(f"\nAttendance for {year}:")
+#     for attendee in attendees:
+#         print(attendee)
+for year, attendees in attendance_by_year.items():
+        output_filename = f"attendance_{year}.csv"
+        with open(output_filename, 'w', newline='', encoding='utf-8-sig') as outfile:
+            fieldnames = attendees[0].keys()
+            writer = csv.DictWriter(outfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            attendees = sorted(attendees, key=lambda k: k['Attendee Code'])
+            writer.writerows(attendees)
+
+        print(f"Attendance data for {year} saved to '{output_filename}'")
